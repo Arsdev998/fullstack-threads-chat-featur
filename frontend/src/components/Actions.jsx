@@ -11,7 +11,6 @@ const Actions = ({ liked, setLiked }) => {
         width="20"
         color={liked ? "rgb(237, 73, 86)" : ""}
         fill={liked ? "rgb(237, 73, 86)" : "transparent"}
-        stroke-width="1.5"
         onClick={() => setLiked(!liked)}
       >
         <path

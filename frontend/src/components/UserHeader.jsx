@@ -30,24 +30,29 @@ const UserHeader = () => {
           <Flex alignItems={"center"}>
             <Text fontSize={"sm"}>guts_berserk</Text>
             <Text
-              fontSize={"xs"}
+              fontSize={{
+                base: 'xs',
+                md: 'sm',
+                lg:'md'
+              }}
               bg={"gray.dark"}
               color={"gray.light"}
               p={1}
               borderRadius={"full"}
             >
-              threads.next
+              threads.net
             </Text>
           </Flex>
         </Box>
         <Box>
-          <Avatar name="Guts" src="/gutss.jpeg" size={"xl"} />
+          <Avatar name="Guts" src="/gutss.jpeg" size={{
+            base: "md",
+            md: "xl"
+          }} />
         </Box>
-        <Box></Box>
       </Flex>
       <Text>
-        Berserk berpusat pada kehidupan Guts , seorang pejuang tentara bayaran
-        yang sendirian, dan Griffith.
+     I Love Freedom and Peace.
       </Text>
       <Flex w={"full"} justifyContent={"space-between"}>
         <Flex gap={2} alignItems={"center"}>
