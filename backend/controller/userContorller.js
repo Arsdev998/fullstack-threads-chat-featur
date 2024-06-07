@@ -23,7 +23,7 @@ const getUserProfile = async (req, res) => {
         .select("-updatedAt");
     }
 
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error : "User not found" });
 
     res.status(200).json(user);
   } catch (err) {
@@ -37,7 +37,7 @@ const signupUser = async (req, res) => {
     const { name, email, username, password } = req.body;
     const user = await User.findOne({ $or: [{ email }, { username }] });
     if (user) {
-      return res.status(400).json({ message: "user already exists" });
+      return res.status(400).json({ error : "user already exists" });
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -59,7 +59,7 @@ const signupUser = async (req, res) => {
         username: newUser.username,
       });
     } else {
-      res.status(400).json({ message: "invalid user data" });
+      res.status(400).json({ error : "invalid user data" });
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -77,7 +77,7 @@ const loginUser = async (req, res) => {
     );
 
     if (!user || !isPasswordCorrect)
-      return res.status(400).json({ message: "invalid username or password" });
+      return res.status(400).json({ error : "invalid username or password" });
     generateTokenAndSetCookie(user._id, res);
     res.status(200).json({
       _id: user._id,
@@ -86,7 +86,7 @@ const loginUser = async (req, res) => {
       username: user.username,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error : error.message });
     console.log("Error inn loginUser :", error.message);
   }
 };
@@ -94,9 +94,9 @@ const loginUser = async (req, res) => {
 const logoutUser = async (req, res) => {
   try {
     res.cookie("jwt", "", { maxAge: 1 });
-    res.status(200).json({ message: "User logged out succesfully " });
+    res.status(200).json({ message : "User logged out succesfully " });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log("Error inn logoutnUser :", error.message);
   }
 };
@@ -161,7 +161,7 @@ const updateUser = async (req, res) => {
     user = await user.save();
     res.status(200).json({ message: "Profile update succesfully", user });
   } catch (error) {
-    res.status(500).json({ message: error.mesage });
+    res.status(500).json({ error : error.mesage });
     console.log("error update user:", error.message);
   }
 };
