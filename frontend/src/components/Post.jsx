@@ -4,9 +4,9 @@ import { BsThreeDots } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
 import Actions from "./Actions";
 import useShowToast from "../hooks/useShowToast";
+import {formatDistanceToNowStrict} from 'date-fns'
 
 const Post = ({ post, postBy }) => {
-  const [like, setLike] = useState(false);
   const showToast = useShowToast();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -49,10 +49,11 @@ const Post = ({ post, postBy }) => {
           />
           <Box w="1px" flex="1" bg={"gray.light"} my={2}></Box>
           <Box position={"relative"}>
+          {post.replies.length === 0 && <Text align={'center'}>🥱</Text>}
             {post.replies[0] && (
               <Avatar
                 size={"xs"}
-                name="thorfin"
+                name={post.replies[0].username}
                 src={post.replies[0].userProfilePict}
                 position={"absolute"}
                 top={"0px"}
@@ -63,7 +64,7 @@ const Post = ({ post, postBy }) => {
             {post.replies[1] && (
               <Avatar
                 size={"xs"}
-                name="Musashi"
+                name={post.replies[1].username}
                 src={post.replies[1].userProfilePict}
                 position={"absolute"}
                 bottom={"0px"}
@@ -71,10 +72,10 @@ const Post = ({ post, postBy }) => {
                 padding={"2px"}
               />
             )}
-            {post.replies[1] && (
+            {post.replies[2] && (
               <Avatar
                 size={"xs"}
-                name="eren"
+                name={post.replies[2].username}
                 src={post.replies[2].userProfilePict}
                 position={"absolute"}
                 bottom={"0px"}
@@ -101,10 +102,15 @@ const Post = ({ post, postBy }) => {
               <Image src="/verified.png" w={4} h={4} ml={1} />
             </Flex>
             <Flex gap={4} alignItems={"center"}>
-              <Text fontSize={"sm"} color={"gray.light"}>
-                1d
+              <Text  fontSize={"xs"}
+              w={36}
+               color={"gray.light"}
+               whiteSpace="nowrap"
+               overflow="hidden"
+               textAlign="right"
+               textOverflow="ellipsis">
+              {formatDistanceToNowStrict(new Date(post.createdAt))} ago
               </Text>
-              <BsThreeDots />
             </Flex>
           </Flex>
           <Text fontSize={"sm"}>{post.caption}</Text>
@@ -119,16 +125,7 @@ const Post = ({ post, postBy }) => {
             </Box>
           )}
           <Flex gap={3} my={1}>
-            <Actions liked={like} setLiked={setLike} />
-          </Flex>
-          <Flex gap={2} alignItems={"center"}>
-            <Text color={"gray.light"} fontSize={"sm"}>
-              {post.replies.length} replies
-            </Text>
-            <Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
-            <Text color={"gray.light"} fontSize={"sm"}>
-              {post.likes.length} likes
-            </Text>
+            <Actions post={post} />
           </Flex>
         </Flex>
       </Flex>
