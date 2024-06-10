@@ -3,7 +3,6 @@ import UserHeader from "../components/UserHeader";
 import UserPost from "../components/UserPost";
 import { useParams } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
-import { Box, Flex, SkeletonCircle, SkeletonText, Spinner } from "@chakra-ui/react";
 import ProfilePageSkeleton from "../components/ProfilePageSkeleton";
 
 const UserPage = () => {
