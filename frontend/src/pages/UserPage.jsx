@@ -3,11 +3,14 @@ import UserHeader from "../components/UserHeader";
 import UserPost from "../components/UserPost";
 import { useParams } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
+import { Box, Flex, SkeletonCircle, SkeletonText, Spinner } from "@chakra-ui/react";
+import ProfilePageSkeleton from "../components/ProfilePageSkeleton";
 
 const UserPage = () => {
   const [user, setUSer] = useState(null);
   const { username } = useParams();
   const showToast = useShowToast();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getUser = async () => {
@@ -20,13 +23,19 @@ const UserPage = () => {
         setUSer(data);
       } catch (error) {
         showToast("Error", error, "error");
+      } finally {
+        setLoading(false);
       }
     };
 
     getUser();
   }, [username, showToast]);
-
-  if (!user) return null;
+  if (!user && loading) {
+    return (
+     <ProfilePageSkeleton/>
+    );
+  }
+  if (!user && !loading) return <h1>User not found</h1>;
   return (
     <>
       <UserHeader user={user} />

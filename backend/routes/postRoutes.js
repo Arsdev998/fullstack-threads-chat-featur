@@ -8,12 +8,13 @@ import {
   getFeedPost
 } from "../controller/postControlller.js";
 import protectRoute from "../middleware/protectRoute.js";
+import upload from "../utils/config/multer.js";
 
 const router = express.Router();
 
 router.get("/feed", protectRoute,getFeedPost);
 router.get("/:id", getPost);
-router.post("/create", protectRoute, createPost);
+router.post("/create",upload.single('img'), protectRoute, createPost);
 router.delete("/:id", protectRoute,deletePost);
 router.post("/like/:id", protectRoute,likeUnlikePost);
 router.post("/reply/:id", protectRoute,replyToPost);
