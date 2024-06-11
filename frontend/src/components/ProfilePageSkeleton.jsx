@@ -52,9 +52,6 @@ const ProfilePageSkeleton = () => {
         <Skeleton height="40px" width="100px" />
         <Skeleton height="40px" width="100px" />
       </Flex>
-      <Skeleton mt="4" height="250px" />
-      <Skeleton mt="4" height="250px" />
-      <Skeleton mt="4" height="250px" />
     </Box>
   );
 };

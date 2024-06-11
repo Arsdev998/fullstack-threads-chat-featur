@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
 import UserHeader from "../components/UserHeader";
-import UserPost from "../components/UserPost";
+import Post from "../components/Post";
 import { useParams } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
 import ProfilePageSkeleton from "../components/ProfilePageSkeleton";
+import { Flex } from "@chakra-ui/layout";
+import { Spinner } from "@chakra-ui/react";
 
 const UserPage = () => {
   const [user, setUSer] = useState(null);
   const { username } = useParams();
   const showToast = useShowToast();
   const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState([]);
+  const [fetchingPost, setFetchingPost] = useState(true);
 
   useEffect(() => {
     const getUser = async () => {
@@ -21,48 +25,47 @@ const UserPage = () => {
         }
         setUSer(data);
       } catch (error) {
-        showToast("Error", error, "error");
+        showToast("Error", error.message, "error");
       } finally {
         setLoading(false);
       }
     };
 
+
+    const getUSerPost = async () => {
+      setFetchingPost(true);
+      try {
+        const res = await fetch(`/api/post/user/${username}`);
+        const data = await res.json();
+        setPosts(data);
+      } catch (error) {
+        showToast("Error", error.message, "error");
+        setPosts([]);
+      } finally {
+        setFetchingPost(false);
+      }
+    };
+
     getUser();
+    getUSerPost();
   }, [username, showToast]);
   if (!user && loading) {
-    return (
-     <ProfilePageSkeleton/>
-    );
+    return <ProfilePageSkeleton />;
   }
   if (!user && !loading) return <h1>User not found</h1>;
+  console.log(posts);
   return (
     <>
       <UserHeader user={user} />
-      <UserPost
-        likes={1200}
-        replies={237}
-        image={
-          "https://i.pinimg.com/736x/77/ee/52/77ee525a6342edbd5a8722093123020a.jpg"
-        }
-        desc={"I'm with my best friend"}
-      />
-      <UserPost
-        likes={6909}
-        replies={88}
-        image={
-          "https://i.pinimg.com/564x/9f/16/41/9f16411bfbd2861ace5f74eda6dbb72f.jpg"
-        }
-        desc={"Casca looked very beautiful at night..."}
-      />
-      <UserPost
-        likes={489}
-        replies={58}
-        image={
-          "https://i.pinimg.com/564x/95/c9/7b/95c97bcbb18783841c4d659263534339.jpg"
-        }
-        desc={"beautiful night while wailing on the moonlight"}
-      />
-      <UserPost likes={8999} replies={790} desc={"I hate Griffith"} />
+      {!fetchingPost && posts.length === 0 && <h1>User has not post</h1>}
+      {fetchingPost && (
+        <Flex justifyContent={"center"} my={12}>
+          <Spinner size={"xl"} />
+        </Flex>
+      )}
+      {posts.map((post)=>(
+        <Post key={post._id} post={post} postBy={post.postBy}/>
+      ))}
     </>
   );
 };

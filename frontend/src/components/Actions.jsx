@@ -27,6 +27,7 @@ const Actions = ({ post: post_ }) => {
   const [post, setPosts] = useState(post_);
   const [isLiking, setIsLiking] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isReply, setIsReply] = useState(false)
   const [reply, setReply] = useState("");
 
   const handleLikedAndUnliked = async () => {
@@ -71,6 +72,8 @@ const Actions = ({ post: post_ }) => {
         "You must be logged in to reply to a post",
         "error"
       );
+      if(isReply) return
+      setIsReply(true)
     try {
       const res = await fetch("/api/post/reply/" + post._id, {
         method: "PUT",
@@ -83,10 +86,14 @@ const Actions = ({ post: post_ }) => {
       if (data.error) return showToast("Error", data.error, "error");
       setPosts({ ...post, replies: [...post.replies, data.reply] });
       showToast("Success", "Reply posted succesfully", "success");
-      console.log(data);
+      onClose()
+      setReply('')
     } catch (error) {
       showToast("error", error, "error");
+    }finally{
+      setIsReply(false)
     }
+
   };
   return (
     <Flex flexDirection="column">
@@ -155,7 +162,7 @@ const Actions = ({ post: post_ }) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} size={"sm"} onClick={handleReply}>
+            <Button colorScheme="blue" mr={3} size={"sm"} isLoading={isReply} onClick={handleReply}>
               Reply
             </Button>
           </ModalFooter>

@@ -4,7 +4,7 @@ import { BsThreeDots } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import Actions from "./Actions";
 
-const UserPost = ({ likes, replies, image, desc }) => {
+const UserPost = ({ post}) => {
   const [like, setLike] = useState(false);
   return (
     <Link to={"/guts/post/1"}>
@@ -62,27 +62,27 @@ const UserPost = ({ likes, replies, image, desc }) => {
               <BsThreeDots />
             </Flex>
           </Flex>
-          <Text fontSize={"sm"}>{desc}</Text>
-          {image && (
+          <Text fontSize={"sm"}>{post.caption}</Text>
+          {post.img && (
             <Box
               borderRadius={6}
               overflow={"hidden"}
               border={"1px solid"}
               borderColor={"gray.light"}
             >
-              <Image src={image} w={"full"} />
+              <Image src={post.img} w={"full"} />
             </Box>
           )}
           <Flex gap={3} my={1}>
-            <Actions liked={like} setLiked={setLike} />
+            <Actions/>
           </Flex>
           <Flex gap={2} alignItems={"center"}>
             <Text color={"gray.light"} fontSize={"sm"}>
-              {replies} replies
+              {post.replies.length} replies
             </Text>
             <Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
             <Text color={"gray.light"} fontSize={"sm"}>
-              {likes} likes
+              {post.likes.length} likes
             </Text>
           </Flex>
         </Flex>

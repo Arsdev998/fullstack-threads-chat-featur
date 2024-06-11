@@ -5,7 +5,8 @@ import {
   deletePost,
   likeUnlikePost,
   replyToPost,
-  getFeedPost
+  getFeedPost,
+  getUserPost
 } from "../controller/postControlller.js";
 import protectRoute from "../middleware/protectRoute.js";
 import upload from "../utils/config/multer.js";
@@ -14,6 +15,7 @@ const router = express.Router();
 
 router.get("/feed", protectRoute,getFeedPost);
 router.get("/:id", getPost);
+router.get("/user/:username", getUserPost);
 router.post("/create",upload.single('img'), protectRoute, createPost);
 router.delete("/:id", protectRoute,deletePost);
 router.put("/like/:id", protectRoute,likeUnlikePost);

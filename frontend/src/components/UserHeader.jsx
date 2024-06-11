@@ -23,7 +23,7 @@ const UserHeader = ({ user }) => {
   const showToast = useShowToast();
   const [update, setUpdate] = useState(false);
   const [following, setFollowing] = useState(
-    user.followers.includes(currentUser._id)
+    user.followers.includes(currentUser?._id)
   );
 
   const copyUrl = () => {
@@ -57,7 +57,7 @@ const UserHeader = ({ user }) => {
         user.followers.pop();
       } else {
         showToast("Success", `Followed ${user.name}`, "success");
-        user.followers.push(currentUser._id);
+        user.followers.push(currentUser?._id);
       }
       setFollowing(!following);
       console.log(data);
