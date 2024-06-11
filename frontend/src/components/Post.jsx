@@ -4,12 +4,16 @@ import { BsThreeDots } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
 import Actions from "./Actions";
 import useShowToast from "../hooks/useShowToast";
-import {formatDistanceToNowStrict} from 'date-fns'
+import { formatDistanceToNowStrict } from "date-fns";
+import { DeleteIcon } from "@chakra-ui/icons";
+import { useRecoilValue } from "recoil";
+import userAtom from "../atoms/userAtom";
 
 const Post = ({ post, postBy }) => {
   const showToast = useShowToast();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const currentUser = useRecoilValue(userAtom);
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -28,6 +32,19 @@ const Post = ({ post, postBy }) => {
     };
     getUser();
   }, [postBy, showToast]);
+
+  const handleDeletePost = async(e)=>{
+    try {
+      e.preventDefault()
+      if(!window.confirm("Are you sure want to delete this post?")) return
+
+      const res = await fetch()
+    } catch (error) {
+      showToast("Error", error, "error");
+    }
+  }
+
+
   console.log(user);
   return (
     <Link to={`${user?.username}/post/${postBy}`}>
@@ -49,7 +66,7 @@ const Post = ({ post, postBy }) => {
           />
           <Box w="1px" flex="1" bg={"gray.light"} my={2}></Box>
           <Box position={"relative"}>
-          {post.replies.length === 0 && <Text align={'center'}>🥱</Text>}
+            {post.replies.length === 0 && <Text align={"center"}>🥱</Text>}
             {post.replies[0] && (
               <Avatar
                 size={"xs"}
@@ -102,15 +119,18 @@ const Post = ({ post, postBy }) => {
               <Image src="/verified.png" w={4} h={4} ml={1} />
             </Flex>
             <Flex gap={4} alignItems={"center"}>
-              <Text  fontSize={"xs"}
-              w={36}
-               color={"gray.light"}
-               whiteSpace="nowrap"
-               overflow="hidden"
-               textAlign="right"
-               textOverflow="ellipsis">
-              {formatDistanceToNowStrict(new Date(post.createdAt))} ago
+              <Text
+                fontSize={"xs"}
+                w={36}
+                color={"gray.light"}
+                whiteSpace="nowrap"
+                overflow="hidden"
+                textAlign="right"
+                textOverflow="ellipsis"
+              >
+                {formatDistanceToNowStrict(new Date(post.createdAt))} ago
               </Text>
+              {currentUser?._id === user?._id && <DeleteIcon size={28} onClick={handleDeletePost}/>}
             </Flex>
           </Flex>
           <Text fontSize={"sm"}>{post.caption}</Text>
