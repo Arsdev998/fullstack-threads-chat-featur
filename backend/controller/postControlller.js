@@ -67,13 +67,13 @@ const deletePost = async (req, res) => {
       return res.status(401).json({ error: "Unauthorized to delete post" });
     }
 
-    if(post.img){
-      const imgId = post.img.split("/").pop().split(".")[0]
-      await cloudinary.uploader.destroy.apply(imgId)
+    if (post.img) {
+      const imgId = post.img.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(imgId);
     }
 
     await Post.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Post deleted succesfully" });
+    res.status(200).json({ message: "Post deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
     console.log("error delete post : ", err.message);
@@ -153,20 +153,20 @@ const getFeedPost = async (req, res) => {
   }
 };
 
-const getUserPost = async (req,res)=>{
-  const {username} = req.params
+const getUserPost = async (req, res) => {
+  const { username } = req.params;
   try {
-    const user = await User.findOne({username})
-    if(!user){
-      return res.status(404).json({error : "User not found"})
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
-    const post = await Post.find({postBy : user._id}).sort({createdAt: -1})
-    res.status(200).json(post)
+    const post = await Post.find({ postBy: user._id }).sort({ createdAt: -1 });
+    res.status(200).json(post);
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.log("error get User post : ", error.message);
   }
-}
+};
 
 export {
   createPost,
@@ -175,5 +175,5 @@ export {
   likeUnlikePost,
   replyToPost,
   getFeedPost,
-  getUserPost
+  getUserPost,
 };

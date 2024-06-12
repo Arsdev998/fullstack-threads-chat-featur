@@ -9,7 +9,7 @@ import { DeleteIcon } from "@chakra-ui/icons";
 import { useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 
-const Post = ({ post, postBy }) => {
+const Post = ({ post, postBy , onDelete }) => {
   const showToast = useShowToast();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -19,7 +19,6 @@ const Post = ({ post, postBy }) => {
       try {
         const res = await fetch("/api/users/profile/" + postBy);
         const data = await res.json();
-        console.log(data);
         if (data.error) {
           showToast("Error", data.error, "error");
           return;
@@ -33,19 +32,25 @@ const Post = ({ post, postBy }) => {
     getUser();
   }, [postBy, showToast]);
 
-  const handleDeletePost = async(e)=>{
+  const handleDeletePost = async (e) => {
     try {
-      e.preventDefault()
-      if(!window.confirm("Are you sure want to delete this post?")) return
-
-      const res = await fetch()
+      e.preventDefault();
+      if (!window.confirm("Are you sure want to delete this post?")) return;
+      const res = await fetch(`/api/post/${post._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      onDelete(post._id);
+      showToast("Success", "Post deleted", "success");
     } catch (error) {
       showToast("Error", error, "error");
     }
-  }
+  };
 
-
-  console.log(user);
   return (
     <Link to={`${user?.username}/post/${postBy}`}>
       <Flex gap={3} mb={4} py={5}>
@@ -130,7 +135,9 @@ const Post = ({ post, postBy }) => {
               >
                 {formatDistanceToNowStrict(new Date(post.createdAt))} ago
               </Text>
-              {currentUser?._id === user?._id && <DeleteIcon size={28} onClick={handleDeletePost}/>}
+              {currentUser?._id === user?._id && (
+                <DeleteIcon size={28} onClick={handleDeletePost} />
+              )}
             </Flex>
           </Flex>
           <Text fontSize={"sm"}>{post.caption}</Text>

@@ -7,13 +7,23 @@ import {
   Image,
   Text,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import Actions from "../components/Actions";
 import Comment from "../components/Comment";
 
 const PostPage = () => {
-  const [like, setLike] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    getUser = async () => {
+      try {
+        
+      } catch (error) {
+        
+      }
+    };
+  }, []);
   return (
     <>
       <Flex>
@@ -48,7 +58,7 @@ const PostPage = () => {
         />
       </Box>
       <Flex gap={3} my={3}>
-        <Actions liked={like} setLiked={setLike} />
+        <Actions post={post} />
       </Flex>
       <Flex gap={2} alignItems={"center"}>
         <Text color={"gray.light"} fontSize={"sm"}>
@@ -56,7 +66,7 @@ const PostPage = () => {
         </Text>
         <Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
         <Text color={"gray.light"} fontSize={"sm"}>
-          {1200 + (like ? 1 : 0)} likes
+          {1200} likes
         </Text>
       </Flex>
       <Divider my={4} />
@@ -69,18 +79,12 @@ const PostPage = () => {
         <Button>Get</Button>
       </Flex>
       <Divider my={4} />
-      <Comment
+      {/* <Comment
         img={"/thorfin.jpeg"}
         cmn={"Nice Guts, we have no enemies😀"}
         name={"Thorfin"}
         date={'2h'}
-      />
-      <Comment
-        img={"/musashi.jpeg"}
-        cmn={"keep living calmly and peacefully my brother🙏"}
-        name={"Musashi"}
-        date={'1d'}
-      />
+      /> */}
     </>
   );
 };

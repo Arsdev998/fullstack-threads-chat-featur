@@ -27,7 +27,6 @@ const HomePages = () => {
     };
     getFeedPost();
   }, [showToast]);
-  console.log(posts);
   return (
     <>
       {loading && (

@@ -49,11 +49,16 @@ const UserPage = () => {
     getUser();
     getUSerPost();
   }, [username, showToast]);
+
+  const handleDeletePost = (postId) => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+  };
+
+
   if (!user && loading) {
     return <ProfilePageSkeleton />;
   }
   if (!user && !loading) return <h1>User not found</h1>;
-  console.log(posts);
   return (
     <>
       <UserHeader user={user} />
@@ -64,7 +69,7 @@ const UserPage = () => {
         </Flex>
       )}
       {posts.map((post)=>(
-        <Post key={post._id} post={post} postBy={post.postBy}/>
+        <Post key={post._id} post={post} postBy={post.postBy} onDelete={handleDeletePost}/>
       ))}
     </>
   );
