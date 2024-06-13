@@ -1,6 +1,5 @@
 import { Avatar, Box, Flex, Image, Text } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { BsThreeDots } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
 import Actions from "./Actions";
 import useShowToast from "../hooks/useShowToast";
@@ -9,7 +8,7 @@ import { DeleteIcon } from "@chakra-ui/icons";
 import { useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 
-const Post = ({ post, postBy , onDelete }) => {
+const Post = ({ post, postBy, onDelete }) => {
   const showToast = useShowToast();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -52,7 +51,7 @@ const Post = ({ post, postBy , onDelete }) => {
   };
 
   return (
-    <Link to={`${user?.username}/post/${postBy}`}>
+    <Link to={`/${user?.username}/post/${post._id}`}>
       <Flex gap={3} mb={4} py={5}>
         <Flex
           flexDirection={"column"}
@@ -123,7 +122,7 @@ const Post = ({ post, postBy , onDelete }) => {
 
               <Image src="/verified.png" w={4} h={4} ml={1} />
             </Flex>
-            <Flex gap={4} alignItems={"center"}>
+            <Flex gap={6} alignItems={"center"}>
               <Text
                 fontSize={"xs"}
                 w={36}

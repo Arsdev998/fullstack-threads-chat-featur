@@ -50,7 +50,7 @@ const getPost = async (req, res) => {
     if (!post) {
       return res.status(400).json({ error: "post not found" });
     }
-    res.status(200).json({ post });
+    res.status(200).json( post );
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.log("error get Post : ", error.message);

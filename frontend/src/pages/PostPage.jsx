@@ -5,69 +5,113 @@ import {
   Divider,
   Flex,
   Image,
+  Spinner,
   Text,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import Actions from "../components/Actions";
 import Comment from "../components/Comment";
+import useGetUserProfile from "../hooks/useGetUserProfile";
+import useShowToast from "../hooks/useShowToast";
+import { useParams } from "react-router-dom";
+import { formatDistanceToNowStrict } from "date-fns";
+import { DeleteIcon } from "@chakra-ui/icons";
+import { useRecoilValue } from "recoil";
+import userAtom from "../atoms/userAtom";
 
 const PostPage = () => {
-  const [user, setUser] = useState(null);
+  const { user, loading } = useGetUserProfile();
+  const [post, setPost] = useState(null);
+  const showToast = useShowToast();
+  const { pid } = useParams();
+  const currentUser = useRecoilValue(userAtom);
 
   useEffect(() => {
-    getUser = async () => {
+    const getPost = async () => {
       try {
-        
+        const res = await fetch(`/api/post/${pid}`);
+        const data = await res.json();
+        if (data.error) {
+          showToast("Error", data.error, "error");
+          return;
+        }
+        console.log(data);
+        setPost(data);
       } catch (error) {
-        
+        showToast("Error", error, "error");
       }
     };
-  }, []);
+    getPost();
+  }, [showToast, pid]);
+
+  const handleDeletePost = async (e) => {
+    try {
+      e.preventDefault();
+      if (!window.confirm("Are you sure want to delete this post?")) return;
+      const res = await fetch(`/api/post/${post._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      onDelete(post._id);
+      showToast("Success", "Post deleted", "success");
+    } catch (error) {
+      showToast("Error", error, "error");
+    }
+  };
+
+  if (!user && loading) {
+    return (
+      <Flex justifyContent={"center"}>
+        <Spinner size={"xl"} />
+      </Flex>
+    );
+  }
+  if (!post) return null;
+
   return (
     <>
       <Flex>
         <Flex w={"full"} alignItems={"center"} gap={3}>
-          <Avatar src="/guts.jpeg" size={"md"} name="Guts" />
+          <Avatar src={user.profilePict} size={"md"} name="Guts" />
           <Flex alignItems={"center"}>
             <Text fontSize={"sm"} fontWeight={"bold"}>
-              Guts Freedom
+              {user.username}
             </Text>
             <Image src="/verified.png" w={4} h={4} ml={1} />
           </Flex>
         </Flex>
         <Flex gap={4} alignItems={"center"}>
-          <Text fontSize={"sm"} color={"gray.light"}>
-            1d
+          <Text
+            fontSize={"sm"}
+            color={"gray.light"}
+            whiteSpace="nowrap"
+            overflow="hidden"
+            textAlign="right"
+            textOverflow="ellipsis"
+          >
+            {formatDistanceToNowStrict(new Date(post.createdAt))} ago
+            {currentUser?._id === user?._id && (
+                <DeleteIcon size={28} onClick={handleDeletePost} />
+              )}
           </Text>
-          <BsThreeDots />
         </Flex>
       </Flex>
-      <Text my={3}>I'm with my best friend</Text>
+      <Text my={3}>{post?.caption}</Text>
       <Box
         borderRadius={6}
         overflow={"hidden"}
         border={"1px solid"}
         borderColor={"gray.light"}
       >
-        <Image
-          src={
-            "https://i.pinimg.com/736x/77/ee/52/77ee525a6342edbd5a8722093123020a.jpg"
-          }
-          w={"full"}
-        />
+        {post.img && <Image src={post?.img} w={"full"} />}
       </Box>
       <Flex gap={3} my={3}>
         <Actions post={post} />
-      </Flex>
-      <Flex gap={2} alignItems={"center"}>
-        <Text color={"gray.light"} fontSize={"sm"}>
-          237 replies
-        </Text>
-        <Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
-        <Text color={"gray.light"} fontSize={"sm"}>
-          {1200} likes
-        </Text>
       </Flex>
       <Divider my={4} />
       <Flex justifyContent={"space-between"}>
