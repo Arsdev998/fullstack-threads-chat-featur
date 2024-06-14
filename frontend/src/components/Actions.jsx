@@ -49,23 +49,25 @@ const Actions = ({ post }) => {
       });
       const data = await res.json();
       if (data.error) return showToast("Error", data.error, "error");
-      if (!liked) {
-        const updatePosts = posts.map((p) => {
-          if (p._id === posts._id) {
-            return { ...p, likes: [...p.likes, user._id] };
-          }
-          return p;
-        });
-        setPosts(updatePosts);
-      } else {
-        const updatedPosts = posts.map((p) => {
-          if (p._id == posts._id) {
-            return { ...p, likes: p.likes.filter((id) => id !== user.id) };
-          }
-          return p;
-        });
-        setPosts(updatedPosts);
-      }
+     if (!liked) {
+				// add the id of the current user to post.likes array
+				const updatedPosts = posts.map((p) => {
+					if (p._id === post._id) {
+						return { ...p, likes: [...p.likes, user._id] };
+					}
+					return p;
+				});
+				setPosts(updatedPosts);
+			} else {
+				// remove the id of the current user from post.likes array
+				const updatedPosts = posts.map((p) => {
+					if (p._id === post._id) {
+						return { ...p, likes: p.likes.filter((id) => id !== user._id) };
+					}
+					return p;
+				});
+				setPosts(updatedPosts);
+			}
       setLiked(!liked);
     } catch (error) {
       showToast("error", error, "error");

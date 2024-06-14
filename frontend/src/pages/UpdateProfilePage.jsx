@@ -44,12 +44,10 @@ export default function UserProfilePage() {
         },
         body: JSON.stringify({ ...inputs, profilePict: imgUrl }),
       });
-
-      if (!res.ok) {
-        throw new Error(`Error: ${res.status}`);
-      }
-
       const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+      }
       showToast("Success", "Profile updated successfully", "success");
       setUser(data);
       localStorage.setItem("user-threads", JSON.stringify(data));
