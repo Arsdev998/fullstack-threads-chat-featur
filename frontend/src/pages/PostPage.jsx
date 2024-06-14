@@ -9,23 +9,25 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { BsThreeDots } from "react-icons/bs";
 import Actions from "../components/Actions";
 import Comment from "../components/Comment";
 import useGetUserProfile from "../hooks/useGetUserProfile";
 import useShowToast from "../hooks/useShowToast";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { formatDistanceToNowStrict } from "date-fns";
 import { DeleteIcon } from "@chakra-ui/icons";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
+import postsAtom from "../atoms/postsAtom";
 
 const PostPage = () => {
   const { user, loading } = useGetUserProfile();
   const [post, setPost] = useState(null);
+  const [posts, setPosts] = useRecoilState(postsAtom)
   const showToast = useShowToast();
   const { pid } = useParams();
   const currentUser = useRecoilValue(userAtom);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getPost = async () => {
@@ -57,8 +59,8 @@ const PostPage = () => {
         showToast("Error", data.error, "error");
         return;
       }
-      onDelete(post._id);
       showToast("Success", "Post deleted", "success");
+      navigate(`/${user.username}`);
     } catch (error) {
       showToast("Error", error, "error");
     }
@@ -96,8 +98,8 @@ const PostPage = () => {
           >
             {formatDistanceToNowStrict(new Date(post.createdAt))} ago
             {currentUser?._id === user?._id && (
-                <DeleteIcon size={28} onClick={handleDeletePost} />
-              )}
+              <DeleteIcon size={28} onClick={handleDeletePost} />
+            )}
           </Text>
         </Flex>
       </Flex>
@@ -123,12 +125,9 @@ const PostPage = () => {
         <Button>Get</Button>
       </Flex>
       <Divider my={4} />
-      {/* <Comment
-        img={"/thorfin.jpeg"}
-        cmn={"Nice Guts, we have no enemies😀"}
-        name={"Thorfin"}
-        date={'2h'}
-      /> */}
+      {post.replies.map((reply) => (
+        <Comment key={reply._id} reply={reply} lastReply={reply._id === post.replies[post.replies.length -1]._id}/> 
+      ))}
     </>
   );
 };

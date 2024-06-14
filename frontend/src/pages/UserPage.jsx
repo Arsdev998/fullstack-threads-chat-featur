@@ -7,12 +7,14 @@ import ProfilePageSkeleton from "../components/ProfilePageSkeleton";
 import { Flex } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/react";
 import useGetUserProfile from "../hooks/useGetUserProfile";
+import { useRecoilState } from "recoil";
+import postsAtom from "../atoms/postsAtom";
 
 const UserPage = () => {
-  const {user,loading} = useGetUserProfile()
+  const { user, loading } = useGetUserProfile();
   const { username } = useParams();
   const showToast = useShowToast();
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useRecoilState(postsAtom)
   const [fetchingPost, setFetchingPost] = useState(true);
 
   useEffect(() => {
@@ -31,12 +33,11 @@ const UserPage = () => {
     };
 
     getUSerPost();
-  }, [username, showToast]);
+  }, [username, showToast, setPosts]);
 
   const handleDeletePost = (postId) => {
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
   };
-
 
   if (!user && loading) {
     return <ProfilePageSkeleton />;
@@ -51,8 +52,12 @@ const UserPage = () => {
           <Spinner size={"xl"} />
         </Flex>
       )}
-      {posts.map((post)=>(
-        <Post key={post._id} post={post} postBy={post.postBy} onDelete={handleDeletePost}/>
+      {posts.map((post) => (
+        <Post
+          key={post._id}
+          post={post}
+          postBy={post.postBy}
+        />
       ))}
     </>
   );

@@ -16,18 +16,19 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
+import postsAtom from "../atoms/postsAtom";
 
-const Actions = ({ post: post_ }) => {
+const Actions = ({ post }) => {
   const user = useRecoilValue(userAtom);
-  const [liked, setLiked] = useState(post_.likes.includes(user?._id));
+  const [liked, setLiked] = useState(post.likes.includes(user?._id));
   const showToast = useShowToast();
-  const [post, setPosts] = useState(post_);
+  const [posts, setPosts] = useRecoilState(postsAtom);
   const [isLiking, setIsLiking] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isReply, setIsReply] = useState(false)
+  const [isReply, setIsReply] = useState(false);
   const [reply, setReply] = useState("");
 
   const handleLikedAndUnliked = async () => {
@@ -49,13 +50,21 @@ const Actions = ({ post: post_ }) => {
       const data = await res.json();
       if (data.error) return showToast("Error", data.error, "error");
       if (!liked) {
-        //add the id of the curent user to post likes array
-        setPosts({ ...post, likes: [...post.likes, user._id] });
-      } else {
-        setPosts({
-          ...post,
-          likes: post.likes.filter((id) => id !== user._id),
+        const updatePosts = posts.map((p) => {
+          if (p._id === posts._id) {
+            return { ...p, likes: [...p.likes, user._id] };
+          }
+          return p;
         });
+        setPosts(updatePosts);
+      } else {
+        const updatedPosts = posts.map((p) => {
+          if (p._id == posts._id) {
+            return { ...p, likes: p.likes.filter((id) => id !== user.id) };
+          }
+          return p;
+        });
+        setPosts(updatedPosts);
       }
       setLiked(!liked);
     } catch (error) {
@@ -72,8 +81,8 @@ const Actions = ({ post: post_ }) => {
         "You must be logged in to reply to a post",
         "error"
       );
-      if(isReply) return
-      setIsReply(true)
+    if (isReply) return;
+    setIsReply(true);
     try {
       const res = await fetch("/api/post/reply/" + post._id, {
         method: "PUT",
@@ -84,16 +93,22 @@ const Actions = ({ post: post_ }) => {
       });
       const data = await res.json();
       if (data.error) return showToast("Error", data.error, "error");
-      setPosts({ ...post, replies: [...post.replies, data.reply] });
+
+      const updatedPosts = posts.map((p) => {
+        if (p._id === post._id) {
+          return { ...p, replies: [...p.replies, data] };
+        }
+        return p;
+      });
+      setPosts(updatedPosts)
       showToast("Success", "Reply posted succesfully", "success");
-      onClose()
-      setReply('')
+      onClose();
+      setReply("");
     } catch (error) {
       showToast("error", error, "error");
-    }finally{
-      setIsReply(false)
+    } finally {
+      setIsReply(false);
     }
-
   };
   return (
     <Flex flexDirection="column">
@@ -162,7 +177,13 @@ const Actions = ({ post: post_ }) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} size={"sm"} isLoading={isReply} onClick={handleReply}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              size={"sm"}
+              isLoading={isReply}
+              onClick={handleReply}
+            >
               Reply
             </Button>
           </ModalFooter>

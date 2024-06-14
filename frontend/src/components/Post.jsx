@@ -5,14 +5,16 @@ import Actions from "./Actions";
 import useShowToast from "../hooks/useShowToast";
 import { formatDistanceToNowStrict } from "date-fns";
 import { DeleteIcon } from "@chakra-ui/icons";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
+import postsAtom from "../atoms/postsAtom";
 
-const Post = ({ post, postBy, onDelete }) => {
+const Post = ({ post, postBy}) => {
   const showToast = useShowToast();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const currentUser = useRecoilValue(userAtom);
+  const [posts, setPosts] = useRecoilState(postsAtom)
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -43,8 +45,8 @@ const Post = ({ post, postBy, onDelete }) => {
         showToast("Error", data.error, "error");
         return;
       }
-      onDelete(post._id);
       showToast("Success", "Post deleted", "success");
+      setPosts(posts.filter((p)=> p._id !== post._id))
     } catch (error) {
       showToast("Error", error, "error");
     }
@@ -135,7 +137,7 @@ const Post = ({ post, postBy, onDelete }) => {
                 {formatDistanceToNowStrict(new Date(post.createdAt))} ago
               </Text>
               {currentUser?._id === user?._id && (
-                <DeleteIcon size={28} onClick={handleDeletePost} />
+                <DeleteIcon size={28} cursor={'pointer'} onClick={handleDeletePost} />
               )}
             </Flex>
           </Flex>

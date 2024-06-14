@@ -39,7 +39,7 @@ const CreatePost = () => {
   const user = useRecoilValue(userAtom);
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useRecoilState(postsAtom);
-  const { username } = useParams ();
+  const { username } = useParams();
 
   const handlePostChange = (e) => {
     const inputText = e.target.value;
@@ -55,46 +55,50 @@ const CreatePost = () => {
   };
 
   const handleCreatePost = async () => {
-		setLoading(true);
-		try {
-			const res = await fetch("/api/post/create", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ postBy: user._id, caption: postText, img: imgUrl }),
-			});
+    setLoading(true);
+    try {
+      const res = await fetch("/api/post/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          postBy: user._id,
+          caption: postText,
+          img: imgUrl,
+        }),
+      });
 
-			const data = await res.json();
-			if (data.error) {
-				showToast("Error", data.error, "error");
-				return;
-			}
-			showToast("Success", "Post created successfully", "success");
-			if (username === user.username) {
-				setPosts([data, ...posts]);
-			}
-			onClose();
-			setPostText("");
-			setImgUrl("");
-		} catch (error) {
-			showToast("Error", error, "error");
-		} finally {
-			setLoading(false);
-		}
-	};
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      showToast("Success", "Post created successfully", "success");
+      if (username === user.username) {
+        setPosts([data, ...posts]);
+      }
+      onClose();
+      setPostText("");
+      setImgUrl("");
+    } catch (error) {
+      showToast("Error", error, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
       <Button
         position={"fixed"}
         bottom={10}
-        right={10}
-        leftIcon={<AddIcon />}
+        right={5}
+        size={{base  : "sm", sm:"md" }}
         bg={useColorModeValue("gray.300", "gray.dark")}
         onClick={onOpen}
       >
-        Post
+        <AddIcon />
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -146,7 +150,12 @@ const CreatePost = () => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleCreatePost} isLoading={loading}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={handleCreatePost}
+              isLoading={loading}
+            >
               Post
             </Button>
           </ModalFooter>

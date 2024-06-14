@@ -37,7 +37,7 @@ const createPost = async (req, res) => {
     const newPost = new Post({ postBy, caption, img });
 
     await newPost.save();
-    res.status(201).json({ message: "Post created successfully", newPost });
+    res.status(201).json(newPost);
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.log("Error creating post: ", error.message);
@@ -50,7 +50,7 @@ const getPost = async (req, res) => {
     if (!post) {
       return res.status(400).json({ error: "post not found" });
     }
-    res.status(200).json( post );
+    res.status(200).json(post);
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.log("error get Post : ", error.message);
@@ -127,7 +127,7 @@ const replyToPost = async (req, res) => {
     const reply = { userId, text, userProfilePict, username };
     post.replies.push(reply);
     await post.save();
-    res.status(200).json({ message: "Reply added succesfully", post });
+    res.status(200).json(reply);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
